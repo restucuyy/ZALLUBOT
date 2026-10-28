@@ -19,7 +19,7 @@ pytz==2024.1
 psutil
 GitPython
 bs4
-Pillow==9.5.0
+Pillow>=10.4.0  # DIBENAHI: pin lama 9.5.0 tidak punya wheel untuk Python 3.12+ sehingga pip mengambil tarball sumber 50,5 MB (dan harus compile dari nol). Versi >=10.4.0 punya wheel siap pakai (kecil). API Pillow yang dipakai modul tidak berubah.
 pymediainfo
 requests
 unidecode

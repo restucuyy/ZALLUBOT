@@ -38,3 +38,12 @@ menghapusnya tidak mengubah fitur apa pun:
    DEVS, KIPAY_API_KEY production).
 4. Startup: PY_FILE = `main.py`, Requirements = `requirements.txt`.
 5. Start.
+
+## Pembenahan kedua (dari percobaan install berikutnya)
+Screenshot install berikutnya menunjukkan kegagalan persis saat
+mengunduh `Pillow-9.5.0.tar.gz` (50,5 MB): pin Pillow lama itu tidak
+menyediakan wheel untuk Python 3.12+ di panel modern, jadi pip mengambil
+paket sumber raksasa dan mengompilasinya dari nol. Pin diganti menjadi
+`Pillow>=10.4.0` yang menyediakan wheel siap pakai untuk Python modern.
+API Pillow yang dipakai modul-modul bot tidak berubah di rentang versi
+ini, jadi tidak ada fitur yang berubah.
