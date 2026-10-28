@@ -36,3 +36,8 @@ KIPAY_MODE = os.getenv("KIPAY_MODE", "production").lower()
 KIPAY_BASE = "https://api.kipay.id"
 
 LOGS_MAKER_UBOT = int(os.getenv("LOGS_MAKER_UBOT", "0"))
+
+# Rich Message (Bot API 10.1) untuk layar BOT pembuat userbot: "on" / "off"
+# Default "on". Hanya berlaku untuk pesan BOT; pesan akun userbot tetap
+# memakai tampilan klasik. Lihat ZallUbot/core/rich.py dan VERSI_RICH.md.
+RICH_MESSAGES = os.getenv("RICH_MESSAGES", "on")

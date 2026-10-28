@@ -8,6 +8,15 @@ from pyrogram.types import *
 from pyrogram.raw import functions
 
 from ZallUbot import *
+from ZallUbot.core.rich import (
+    btn,
+    edit_rich_message,
+    edit_rich_query,
+    payment_buttons,
+    payment_table,
+    reply_rich,
+    send_rich,
+)
 
 
 @PY.BOT("start")
@@ -31,51 +40,66 @@ async def _(client, message):
 async def _(client, callback_query):
     user_id = callback_query.from_user.id
     if user_id in ubot._get_my_id:
-        buttons = [
-            [InlineKeyboardButton("⦪ ʀᴇꜱᴛᴀʀᴛ ⦫", callback_data=f"ress_ubot")],
-            [InlineKeyboardButton("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}")],
-        ]
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote><b>⌭ ᴀɴᴅᴀ ꜱᴜᴅᴀʜ ᴍᴇᴍʙᴜᴀᴛ ᴜꜱᴇʀʙᴏᴛ\n\n⌭ ᴊɪᴋᴀ ᴜꜱᴇʀʙᴏᴛ ᴀɴᴅᴀ ᴛɪᴅᴀᴋ ʙɪꜱᴀ ᴅɪɢᴜɴᴀᴋᴀɴ ꜱɪʟᴀʜᴋᴀɴ ᴛᴇᴋᴇɴ ᴛᴏᴍʙᴏʟ ʀᴇꜱᴛᴀʀᴛ ᴅɪ ᴀᴛᴀꜱ</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "✅ Userbot sudah dibuat"),
+                (
+                    "INFO",
+                    "Jika userbot Anda tidak bisa digunakan, silakan tekan tombol Restart di bawah",
+                ),
+            ],
+            buttons=[
+                [btn("⦪ ʀᴇꜱᴛᴀʀᴛ ⦫", callback_data="ress_ubot", style="danger")],
+                [btn("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}", style="primary")],
+            ],
         )
     elif len(ubot._ubot) + 1 > MAX_BOT:
-        buttons = [
-            [InlineKeyboardButton("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}")],
-        ]
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote><b><b>☫ ᴛɪᴅᴀᴋ ʙɪsᴀ ᴍᴇᴍʙᴜᴀᴛ ᴜsᴇʀʙᴏᴛ!</b>
-
-<b>☫ ᴋᴀʀᴇɴᴀ ᴍᴀᴋsɪᴍᴀʟ ᴜsᴇʀʙᴏᴛ ᴀᴅᴀʟᴀʜ {Fonts.smallcap(str(len(ubot._ubot)))} ᴛᴇʟᴀʜ ᴛᴇʀᴄᴀᴘᴀɪ</b>
-
-<blockquote><b>☫ sɪʟᴀʜᴋᴀɴ ʜᴜʙᴜɴɢɪ owner</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "❌ Tidak bisa membuat userbot"),
+                ("MAKSIMAL", f"{len(ubot._ubot)} userbot telah tercapai"),
+                ("INFO", "Silakan hubungi owner"),
+            ],
+            buttons=[
+                [btn("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}", style="primary")],
+            ],
         )
     premium_users, ultra_premium_users = await get_list_from_vars(client.me.id, "PREM_USERS"), await get_list_from_vars(client.me.id, "ULTRA_PREM")
     if user_id not in premium_users and user_id not in ultra_premium_users:
-        buttons = [
-            [InlineKeyboardButton("⦪ ʟᴀɴᴊᴜᴛᴋᴀɴ ⦫", callback_data="bayar_dulu")],
-            [InlineKeyboardButton("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}")],
-        ]
-        return await callback_query.edit_message_text(
-            MSG.POLICY(),
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "💎 Belum Premium"),
+                (
+                    "INFO",
+                    "Anda belum membeli userbot — lanjutkan untuk melihat pembayaran",
+                ),
+                ("BANTUAN", "Jika ada kendala, silakan hubungi owner bot"),
+            ],
+            buttons=[
+                [btn("⦪ ʟᴀɴᴊᴜᴛᴋᴀɴ ⦫", callback_data="bayar_dulu", style="success")],
+                [btn("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}", style="primary")],
+            ],
         )
     else:
-        buttons = [[InlineKeyboardButton("⦪ ʟᴀɴᴊᴜᴛᴋᴀɴ ⦫", callback_data="buat_ubot")]]
-        return await callback_query.edit_message_text(
-            """
-<blockquote><b>⌭ ᴀɴᴅᴀ ᴛᴇʟᴀʜ ᴍᴇᴍʙᴇʟɪ ᴜꜱᴇʀʙᴏᴛ ꜱɪʟᴀʜᴋᴀɴ ᴘᴇɴᴄᴇᴛ ᴛᴏᴍʙᴏʟ ʟᴀɴᴊᴜᴛᴋᴀɴ ᴜɴᴛᴜᴋ ᴍᴇᴍʙᴜᴀᴛ ᴜꜱᴇʀʙᴏᴛ</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "✅ Premium"),
+                (
+                    "INFO",
+                    "Anda telah membeli userbot — silakan pencet tombol Lanjutkan untuk membuat userbot",
+                ),
+            ],
+            buttons=[
+                [btn("⦪ ʟᴀɴᴊᴜᴛᴋᴀɴ ⦫", callback_data="buat_ubot", style="success")],
+            ],
         )
 
 
@@ -83,101 +107,112 @@ async def _(client, callback_query):
 async def _(client, callback_query):
     user_id = callback_query.from_user.id
     if user_id in ubot._get_my_id:
-        buttons = [
-            [InlineKeyboardButton("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}")],
-        ]
         exp = await get_expired_date(user_id)
         prefix = await get_pref(user_id)
         waktu = exp.strftime("%d-%m-%Y") if exp else "None"
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote> ᴜꜱᴇʀʙᴏᴛ ᴘʀᴇᴍɪᴜᴍ ʙʏ @yaetiem
-   ꜱᴛᴀᴛᴜꜱ : ᴘʀᴇᴍɪᴜᴍ
-   ᴘʀᴇꜰɪxᴇꜱ : {prefix[0]}
-   ᴇxᴘɪʀᴇᴅ_ᴏɴ : {waktu}</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT — STATUS",
+            [
+                ("STATUS", "Premium"),
+                ("PREFIX", prefix[0]),
+                ("EXPIRED", waktu),
+            ],
+            buttons=[
+                [btn("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}", style="primary")],
+            ],
         )
     else:
-        buttons = [
-            [InlineKeyboardButton("✮ ʙᴇʟɪ ᴜꜱᴇʀʙᴏᴛ ✮", callback_data=f"bahan")],
-            [InlineKeyboardButton("卍 ᴋᴇᴍʙᴀʟɪ 卐", callback_data=f"home {user_id}")],
-        ]
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote><b>✮ ᴍᴀᴀꜰ ᴀɴᴅᴀ ʙᴇʟᴜᴍ ᴍᴇᴍʙᴇʟɪ ᴜꜱᴇʀʙᴏᴛ, ꜱɪʟᴀᴋᴀɴ ᴍᴇᴍʙᴇʟɪ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ.</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
-    )
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT — STATUS",
+            [
+                ("STATUS", "❌ Belum membeli userbot"),
+                (
+                    "INFO",
+                    "Maaf, Anda belum membeli userbot — silakan membeli terlebih dahulu",
+                ),
+            ],
+            buttons=[
+                [btn("✮ ʙᴇʟɪ ᴜꜱᴇʀʙᴏᴛ ✮", callback_data="bahan", style="success")],
+                [btn("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}", style="primary")],
+            ],
+        )
 
 
 @PY.CALLBACK("buat_ubot")
 async def _(client, callback_query):
     user_id = callback_query.from_user.id
     if user_id in ubot._get_my_id:
-        buttons = [
-            [InlineKeyboardButton("⦪ ʀᴇꜱᴛᴀʀᴛ ⦫", callback_data=f"ress_ubot")],
-            [InlineKeyboardButton("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}")],
-        ]
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote><b>✮ ᴀɴᴅᴀ ꜱᴜᴅᴀʜ ᴍᴇᴍʙᴜᴀᴛ ᴜꜱᴇʀʙᴏᴛ\n\n✮ ᴊɪᴋᴀ ᴜꜱᴇʀʙᴏᴛ ᴀɴᴅᴀ ᴛɪᴅᴀᴋ ʙɪꜱᴀ ᴅɪɢᴜɴᴀᴋᴀɴ ꜱɪʟᴀʜᴋᴀɴ ᴛᴇᴋᴇɴ ᴛᴏᴍʙᴏʟ ʀᴇꜱᴛᴀʀᴛ ᴅɪ ᴀᴛᴀꜱ</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "✅ Userbot sudah dibuat"),
+                (
+                    "INFO",
+                    "Jika userbot Anda tidak bisa digunakan, silakan tekan tombol Restart di bawah",
+                ),
+            ],
+            buttons=[
+                [btn("⦪ ʀᴇꜱᴛᴀʀᴛ ⦫", callback_data="ress_ubot", style="danger")],
+                [btn("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}", style="primary")],
+            ],
         )
     elif len(ubot._ubot) + 1 > MAX_BOT:
-        buttons = [
-            [InlineKeyboardButton("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}")],
-        ]
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote><b><b>✮ ᴛɪᴅᴀᴋ ʙɪsᴀ ᴍᴇᴍʙᴜᴀᴛ ᴜsᴇʀʙᴏᴛ!</b>
-
-<b>✮ ᴋᴀʀᴇɴᴀ ᴍᴀᴋsɪᴍᴀʟ ᴜsᴇʀʙᴏᴛ ᴀᴅᴀʟᴀʜ {Fonts.smallcap(str(len(ubot._ubot)))} ᴛᴇʟᴀʜ ᴛᴇʀᴄᴀᴘᴀɪ</b>
-
-<blockquote><b>✮ sɪʟᴀʜᴋᴀɴ ʜᴜʙᴜɴɢɪ: ᴀᴅᴍɪɴ ᴊɪᴋᴀ ᴍᴀᴜ ᴅɪʙᴜᴀᴛᴋᴀɴ ʙᴏᴛ sᴇᴘᴇʀᴛɪ sᴀʏᴀ </b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "❌ Tidak bisa membuat userbot"),
+                ("MAKSIMAL", f"{len(ubot._ubot)} userbot telah tercapai"),
+                ("INFO", "Silakan hubungi admin jika mau dibuatkan bot seperti saya"),
+            ],
+            buttons=[
+                [btn("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}", style="primary")],
+            ],
         )
     premium_users, ultra_premium_users = await get_list_from_vars(client.me.id, "PREM_USERS"), await get_list_from_vars(client.me.id, "ULTRA_PREM")
     if user_id not in premium_users and user_id not in ultra_premium_users:
-        buttons = [
-            [InlineKeyboardButton("⦪ ʙᴇʟɪ ᴜꜱᴇʀʙᴏᴛ ⦫", callback_data="bahan")],
-            [InlineKeyboardButton("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}")],
-        ]
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote><b>✮ ᴍᴀᴀꜰ ᴀɴᴅᴀ ʙᴇʟᴜᴍ ᴍᴇᴍʙᴇʟɪ ᴜꜱᴇʀʙᴏᴛ, ꜱɪʟᴀᴋᴀɴ ᴍᴇᴍʙᴇʟɪ ᴛᴇʀʟᴇʙɪʜ ᴅᴀʜᴜʟᴜ</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "❌ Belum membeli userbot"),
+                (
+                    "INFO",
+                    "Maaf, Anda belum membeli userbot — silakan membeli terlebih dahulu",
+                ),
+            ],
+            buttons=[
+                [btn("⦪ ʙᴇʟɪ ᴜꜱᴇʀʙᴏᴛ ⦫", callback_data="bahan", style="success")],
+                [btn("⦪ ᴋᴇᴍʙᴀʟɪ ⦫", callback_data=f"home {user_id}", style="primary")],
+            ],
         )
     else:
-        buttons = [[InlineKeyboardButton("⦪ ʟᴀɴᴊᴜᴛᴋᴀɴ ⦫", callback_data="add_ubot")]]
-        return await callback_query.edit_message_text(
-            """
-<blockquote><b>✮ ᴜɴᴛᴜᴋ ᴍᴇᴍʙᴜᴀᴛ ᴜsᴇʀʙᴏᴛ sɪᴀᴘᴋᴀɴ ʙᴀʜᴀɴ ʙᴇʀɪᴋᴜᴛ
-
-    ✮ <code>ᴘʜᴏɴᴇ_ɴᴜᴍʙᴇʀ</code>: ɴᴏᴍᴇʀ ʜᴘ ᴀᴋᴜɴ ᴛᴇʟᴇɢʀᴀᴍ
-
-✮ ᴊɪᴋᴀ sᴜᴅᴀʜ ᴛᴇʀsᴇᴅɪᴀ sɪʟᴀʜᴋᴀɴ ᴋʟɪᴋ ᴛᴏᴍʙᴏɪ ᴅɪʙᴀᴡᴀʜ</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "✅ Premium"),
+                ("BAHAN", "Phone Number — nomor HP akun Telegram"),
+                ("INFO", "Jika sudah tersedia, silakan klik tombol di bawah"),
+            ],
+            buttons=[
+                [btn("⦪ ʟᴀɴᴊᴜᴛᴋᴀɴ ⦫", callback_data="add_ubot", style="success")],
+            ],
         )
 
 @PY.CALLBACK("bayar_dulu")
 async def _(client, callback_query):
     user_id = callback_query.from_user.id
-    buttons = BTN.PLUS_MINUS(1, user_id)
-    return await callback_query.edit_message_text(
-        MSG.TEXT_PAYMENT(30, 30, 1),
-        disable_web_page_preview=True,
-        reply_markup=InlineKeyboardMarkup(buttons),
+    title, rows, footer = payment_table(30, 30, 1)
+    return await edit_rich_query(
+        callback_query,
+        title,
+        rows,
+        buttons=payment_buttons(1, user_id),
+        footer=footer,
     )
 
 
@@ -304,19 +339,26 @@ async def _(client, callback_query):
     for mod in loadModule():
         importlib.reload(importlib.import_module(f"ZallUbot.modules.{mod}"))
     SH = await ubot.get_prefix(new_client.me.id)
-    buttons = [
-            [InlineKeyboardButton("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}")],
-        ]
-    text_done = f"""
-<blockquote><b>✮ ʙᴇʀʜᴀꜱɪʟ ᴅɪᴀᴋᴛɪꜰᴋᴀɴ
-ᚗ ɴᴀᴍᴇ : <a href=tg://user?id={new_client.me.id}>{new_client.me.first_name} {new_client.me.last_name or ''}</a>
-ᚗ ɪᴅ : {new_client.me.id}
-ᚗ ᴘʀᴇꜰɪxᴇꜱ : {' '.join(SH)}
-⌭ ʜᴀʀᴀᴘ hubungi admin ᴜɴᴛᴜᴋ ɪɴꜰᴏ" ᴛᴇʀʙᴀʀᴜ
-ᴊɪᴋᴀ ʙᴏᴛ ᴛɪᴅᴀᴋ ʀᴇꜱᴘᴏɴ, ᴋᴇᴛɪᴋ /restart</b></blockquote>
-        """
-    await bot_msg.edit(text_done, disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons))
+    await edit_rich_message(
+        bot_msg,
+        "🛡️ ZALLUBOT",
+        [
+            ("STATUS", "✅ Berhasil diaktifkan"),
+            (
+                "NAMA",
+                f"{new_client.me.first_name} {new_client.me.last_name or ''}".strip(),
+            ),
+            ("ID", str(new_client.me.id)),
+            ("PREFIX", " ".join(SH)),
+            (
+                "INFO",
+                "Harap hubungi admin untuk info terbaru — jika bot tidak respon, ketik /restart",
+            ),
+        ],
+        buttons=[
+            [btn("ᴋᴇᴍʙᴀʟɪ", callback_data=f"home {user_id}", style="primary")],
+        ],
+    )
     await bash("rm -rf *session*")
     await install_my_peer(new_client)
     try:
@@ -326,25 +368,28 @@ async def _(client, callback_query):
     except UserAlreadyParticipant:
         pass
 
-    return await bot.send_message(
+    return await send_rich(
+        bot,
         LOGS_MAKER_UBOT,
-        f"""
-<b>⌬ ᴜsᴇʀʙᴏᴛ ᴅɪᴀᴋᴛɪғᴋᴀɴ</b>
-<b> ├ ᴀᴋᴜɴ:</b> <a href=tg://user?id={new_client.me.id}>{new_client.me.first_name} {new_client.me.last_name or ''}</a> 
-<b> ╰ ɪᴅ:</b> <code>{new_client.me.id}</code>
-""",
-        reply_markup=InlineKeyboardMarkup(
+        "🛡️ ZALLUBOT — LOG",
+        [
+            ("STATUS", "⌬ Userbot diaktifkan"),
+            (
+                "AKUN",
+                f"{new_client.me.first_name} {new_client.me.last_name or ''}".strip(),
+            ),
+            ("ID", str(new_client.me.id)),
+        ],
+        buttons=[
             [
-                [
-                    InlineKeyboardButton(
-                        "⦪ ᴄᴇᴋ ᴍᴀsᴀ ᴀᴋᴛɪғ ⦫",
-                        callback_data=f"cek_masa_aktif {new_client.me.id}",
-                    )
-                ],
-            ]
-        ),
-        disable_web_page_preview=True,
-)
+                btn(
+                    "⦪ ᴄᴇᴋ ᴍᴀsᴀ ᴀᴋᴛɪғ ⦫",
+                    callback_data=f"cek_masa_aktif {new_client.me.id}",
+                    style="primary",
+                )
+            ],
+        ],
+    )
 
 async def is_cancel(callback_query, text):
     if text.startswith("/cancel"):
@@ -357,16 +402,14 @@ async def is_cancel(callback_query, text):
 
 @PY.BOT("control")
 async def _(client, message):
-    buttons = [
-            [InlineKeyboardButton("ʀᴇꜱᴛᴀʀᴛ", callback_data=f"ress_ubot")],
-        ]
-    await message.reply(
-            f"""
-<blockquote><b>✮ ᴀɴᴅᴀ ᴀᴋᴀɴ ᴍᴇʟᴀᴋᴜᴋᴀɴ ʀᴇꜱᴛᴀʀᴛ?!\n✮ ᴊɪᴋᴀ ɪʏᴀ ᴘᴇɴᴄᴇᴛ ᴛᴏᴍʙᴏʟ ᴅɪ ʙᴀᴡᴀʜ ɪɴɪ</b></blockquote>
-""",
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
+    await reply_rich(
+        message,
+        "🛡️ ZALLUBOT",
+        [("INFO", "Anda akan melakukan restart?! Jika iya, pencet tombol di bawah ini")],
+        buttons=[
+            [btn("ʀᴇꜱᴛᴀʀᴛ", callback_data="ress_ubot", style="danger")],
+        ],
+    )
 
 @PY.CALLBACK("ress_ubot")
 async def _(client, callback_query):
@@ -388,8 +431,17 @@ async def _(client, callback_query):
                             importlib.reload(
                                 importlib.import_module(f"ZallUbot.modules.{mod}")
                             )
-                        return await callback_query.edit_message_text(
-                            f"✮ ʀᴇꜱᴛᴀʀᴛ ʙᴇʀʜᴀꜱɪʟ ᴅɪʟᴀᴋᴜᴋᴀɴ !\n\n ✮ ɴᴀᴍᴇ: {UB.me.first_name} {UB.me.last_name or ''} | {UB.me.id}"
+                        return await edit_rich_query(
+                            callback_query,
+                            "🛡️ ZALLUBOT",
+                            [
+                                ("STATUS", "✅ Restart berhasil dilakukan"),
+                                (
+                                    "NAMA",
+                                    f"{UB.me.first_name} {UB.me.last_name or ''}".strip(),
+                                ),
+                                ("ID", str(UB.me.id)),
+                            ],
                         )
                     except Exception as error:
                         return await callback_query.edit_message_text(f"{error}")
@@ -415,20 +467,64 @@ async def _(client, message):
                             importlib.reload(
                                 importlib.import_module(f"ZallUbot.modules.{mod}")
                             )
-                        return await msg.edit(
-                            f"✮ ʀᴇꜱᴛᴀʀᴛ ʙᴇʀʜᴀꜱɪʟ ᴅɪʟᴀᴋᴜᴋᴀɴ !\n\n ✮ ɴᴀᴍᴇ: {UB.me.first_name} {UB.me.last_name or ''} | `{UB.me.id}`"
+                        return await edit_rich_message(
+                            msg,
+                            "🛡️ ZALLUBOT",
+                            [
+                                ("STATUS", "✅ Restart berhasil dilakukan"),
+                                (
+                                    "NAMA",
+                                    f"{UB.me.first_name} {UB.me.last_name or ''}".strip(),
+                                ),
+                                ("ID", str(UB.me.id)),
+                            ],
                         )
                     except Exception as error:
                         return await msg.edit(f"{error}")
+
+def _ubot_rows(count):
+    x = ubot._ubot[count]
+    return [
+        ("USERBOT KE", f"{count + 1}/{len(ubot._ubot)}"),
+        ("AKUN", f"{x.me.first_name} {x.me.last_name or ''}".strip()),
+        ("USER ID", str(x.me.id)),
+    ]
+
+
+def _ubot_buttons(count):
+    x = ubot._ubot[count]
+    return [
+        [
+            btn(
+                "⦪ ʜᴀᴘᴜs ᴅᴀʀɪ ᴅᴀᴛᴀʙᴀsᴇ ⦫",
+                callback_data=f"del_ubot {x.me.id}",
+                style="danger",
+            )
+        ],
+        [
+            btn(
+                "⦪ ᴄᴇᴋ ᴍᴀsᴀ ᴀᴋᴛɪғ ⦫",
+                callback_data=f"cek_masa_aktif {x.me.id}",
+                style="primary",
+            )
+        ],
+        [
+            btn("⟢", callback_data=f"p_ub {count}", style="primary"),
+            btn("⟣", callback_data=f"n_ub {count}", style="primary"),
+        ],
+    ]
+
 
 @PY.CALLBACK("cek_ubot")
 @PY.BOT("getubot")
 @PY.ADMIN
 async def _(client, callback_query):
-    await bot.send_message(
+    await send_rich(
+        bot,
         callback_query.from_user.id,
-        await MSG.UBOT(0),
-        reply_markup=InlineKeyboardMarkup(BTN.UBOT(ubot._ubot[0].me.id, 0)),
+        "🛡️ ZALLUBOT — LIST USERBOT",
+        _ubot_rows(0),
+        buttons=_ubot_buttons(0),
     )
 
 @PY.CALLBACK("cek_masa_aktif")
@@ -466,16 +562,24 @@ async def _(client, callback_query):
             await callback_query.answer(
                 f"✮ {get_mention} ʙᴇʀʜᴀsɪʟ ᴅɪʜᴀᴘᴜs ᴅᴀʀɪ ᴅᴀᴛᴀʙᴀsᴇ", True
             )
-            await callback_query.edit_message_text(
-                await MSG.UBOT(0),
-                reply_markup=InlineKeyboardMarkup(
-                    BTN.UBOT(ubot._ubot[0].me.id, 0)
-                ),
+            await edit_rich_query(
+                callback_query,
+                "🛡️ ZALLUBOT — LIST USERBOT",
+                _ubot_rows(0),
+                buttons=_ubot_buttons(0),
             )
-            await bot.send_message(
+            await send_rich(
+                bot,
                 X.me.id,
-                MSG.EXP_MSG_UBOT(X),
-                reply_markup=InlineKeyboardMarkup(BTN.EXP_UBOT()),
+                "🛡️ ZALLUBOT",
+                [
+                    ("PEMBERITAHUAN", "Masa aktif userbot Anda telah habis"),
+                    ("AKUN", f"{X.me.first_name} {X.me.last_name or ''}".strip()),
+                    ("ID", str(X.me.id)),
+                ],
+                buttons=[
+                    [btn("beli userbot", callback_data="bahan", style="success")],
+                ],
             )
 
     
@@ -493,9 +597,9 @@ async def _(client, callback_query):
             count = len(ubot._ubot) - 1
         else:
             count -= 1
-    await callback_query.edit_message_text(
-        await MSG.UBOT(count),
-        reply_markup=InlineKeyboardMarkup(
-            BTN.UBOT(ubot._ubot[count].me.id, count)
-        ),
+    await edit_rich_query(
+        callback_query,
+        "🛡️ ZALLUBOT — LIST USERBOT",
+        _ubot_rows(count),
+        buttons=_ubot_buttons(count),
     )

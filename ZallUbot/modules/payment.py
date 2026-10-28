@@ -6,6 +6,15 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pytz import timezone
 
 from ZallUbot import *
+from ZallUbot.core.rich import (
+    btn,
+    edit_rich_query,
+    home_table,
+    payment_buttons,
+    payment_table,
+    send_rich,
+    start_buttons,
+)
 
 CONFIRM_PAYMENT = []
 
@@ -34,17 +43,18 @@ DANA : ||HUB. OWNER||
     if get.id in CONFIRM_PAYMENT:
         if not pesan.photo:
             CONFIRM_PAYMENT.remove(get.id)
-            buttons = [[InlineKeyboardButton("✅ ᴋᴏɴꜰɪʀᴍᴀsɪ", callback_data="confirm")]]
-            return await bot.send_message(
+            return await send_rich(
+                bot,
                 user_id,
-                """
-<blockquote><b>❌ ᴛɪᴅᴀᴋ ᴅᴀᴘᴀᴛ ᴅɪᴘʀᴏsᴇs</b>
-
-<b>💬 ʜᴀʀᴀᴘ ᴋɪʀɪᴍᴋᴀɴ sᴄʀᴇᴇɴsʜᴏᴛ ʙᴜᴋᴛɪ ᴘᴇᴍʙᴀʏᴀʀᴀɴ ᴀɴᴅᴀ ʏᴀɴɢ ᴠᴀʟɪᴅ</b>
-
-<b>✅ sɪʟᴀʜᴋᴀɴ ᴋᴏɴꜰɪʀᴍᴀsɪ ᴜʟᴀɴɢ ᴘᴇᴍʙᴀʏᴀʀᴀɴ ᴀɴᴅᴀ</b></blockquote>
-""",
-                reply_markup=InlineKeyboardMarkup(buttons),
+                "🛡️ ZALLUBOT",
+                [
+                    ("STATUS", "❌ Tidak dapat diproses"),
+                    ("INFO", "Harap kirimkan screenshot bukti pembayaran Anda yang valid"),
+                    ("PETUNJUK", "Silakan konfirmasi ulang pembayaran Anda"),
+                ],
+                buttons=[
+                    [btn("✅ ᴋᴏɴꜰɪʀᴍᴀsɪ", callback_data="confirm", style="success")],
+                ],
             )
         elif pesan.photo:
             buttons = BTN.ADD_EXP(get.id)
@@ -53,17 +63,18 @@ DANA : ||HUB. OWNER||
                 reply_markup=buttons,
             )
             CONFIRM_PAYMENT.remove(get.id)
-            buttons = [
-                [InlineKeyboardButton("📞 ᴏᴡɴᴇʀ", url="https://t.me/yaetiem")]
-            ]
-            return await bot.send_message(
+            return await send_rich(
+                bot,
                 user_id,
-                f"""
-<blockquote><b>💬 ʙᴀɪᴋ {full_name} sɪʟᴀʜᴋᴀɴ ᴅɪᴛᴜɴɢɢᴜ ᴅᴀɴ ᴊᴀɴɢᴀɴ sᴘᴀᴍ ʏᴀ</b>
-
-<b>🏦 ᴘᴇᴍʙᴀʏᴀʀᴀɴ ᴀɴᴅᴀ ᴀᴋᴀɴ ᴅɪᴋᴏɴꜰɪʀᴍᴀsɪ sᴇᴛᴇʟᴀʜ 1-2 ᴊᴀᴍ ᴋᴇʀᴊᴀ</b></blockquote>
-""",
-                reply_markup=InlineKeyboardMarkup(buttons),
+                "🛡️ ZALLUBOT",
+                [
+                    ("STATUS", "✅ Bukti pembayaran terkirim"),
+                    ("INFO", f"Baik {full_name}, silakan ditunggu dan jangan spam ya"),
+                    ("KONFIRMASI", "Pembayaran Anda akan dikonfirmasi setelah 1-2 jam kerja"),
+                ],
+                buttons=[
+                    [btn("📞 ᴏᴡɴᴇʀ", url="https://t.me/yaetiem")],
+                ],
             )
 
 
@@ -81,11 +92,13 @@ async def _(client, callback_query):
             if BULAN < 12:
                 BULAN += 1
                 TOTAL_HARGA = HARGA * BULAN
-        buttons = BTN.PLUS_MINUS(BULAN, callback_query.from_user.id)
-        await callback_query.message.edit_text(
-            MSG.TEXT_PAYMENT(HARGA, TOTAL_HARGA, BULAN),
-            disable_web_page_preview=True,
-            reply_markup=InlineKeyboardMarkup(buttons),
+        title, rows, footer = payment_table(HARGA, TOTAL_HARGA, BULAN)
+        await edit_rich_query(
+            callback_query,
+            title,
+            rows,
+            buttons=payment_buttons(BULAN, callback_query.from_user.id),
+            footer=footer,
         )
     except:
         pass
@@ -96,74 +109,64 @@ async def _(client, callback_query):
     query = callback_query.data.split()
     get_user = await bot.get_users(query[1])
     if query[0] == "success":
-        buttons = [
-            [InlineKeyboardButton("🔥 ʙᴜᴀᴛ ᴜsᴇʀʙᴏᴛ 🔥", callback_data="buat_ubot")],
-        ]
-        await bot.send_message(
+        await send_rich(
+            bot,
             get_user.id,
-            f"""
-<blockquote><b>✅ ᴘᴇᴍʙᴀʏᴀʀᴀɴ ᴀɴᴅᴀ ʙᴇʀʜᴀsɪʟ ᴅɪᴋᴏɴꜰɪʀᴍᴀsɪ</b>
-
-<b>💬 sᴇᴋᴀʀᴀɴɢ ᴀɴᴅᴀ ʙɪsᴀ ᴍᴇᴍʙᴜᴀᴛ ᴜsᴇʀʙᴏᴛ</b></blockquote>
-""",
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
-        buttons_success = [
+            "🛡️ ZALLUBOT",
             [
-                InlineKeyboardButton(
-                    "👤 ᴅᴀᴘᴀᴛᴋᴀɴ ᴘʀᴏꜰɪʟ 👤", callback_data=f"profil {get_user.id}"
-                )
+                ("STATUS", "✅ Pembayaran Anda berhasil dikonfirmasi"),
+                ("INFO", "Sekarang Anda bisa membuat userbot"),
             ],
-        ]
+            buttons=[
+                [btn("🔥 ʙᴜᴀᴛ ᴜꜱᴇʀʙᴏᴛ 🔥", callback_data="buat_ubot", style="success")],
+            ],
+        )
         await add_to_vars(client.me.id, "PREM_USERS", get_user.id)
         now = datetime.now(timezone("Asia/Jakarta"))
         expired = now + relativedelta(months=int(query[2]))
         await set_expired_date(get_user.id, expired)
-        return await callback_query.edit_message_text(
-            f"""
-<blockquote><b>✅ {get_user.first_name} {get_user.last_name or ''} ᴅɪᴛᴀᴍʙᴀʜᴋᴀɴ ᴋᴇ ᴀɴɢɢᴏᴛᴀ ᴘʀᴇᴍɪᴜᴍ</b></blockquote>
-""",
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "✅ Ditambahkan ke anggota premium"),
+                ("PENGGUNA", f"{get_user.first_name} {get_user.last_name or ''}".strip()),
+            ],
         )
     if query[0] == "failed":
-        buttons = [
-            [
-                InlineKeyboardButton(
-                    "💳 ʟᴀᴋᴜᴋᴀɴ ᴘᴇᴍʙᴀʏᴀʀᴀɴ 💳", callback_data="bayar_dulu"
-                )
-            ],
-        ]
-        await bot.send_message(
+        await send_rich(
+            bot,
             get_user.id,
-            """
-<b>❌ ᴘᴇᴍʙᴀʏᴀʀᴀɴ ᴀɴᴅᴀ ᴛɪᴅᴀᴋ ʙɪsᴀ ᴅɪᴋᴏɴꜰɪʀᴍᴀsɪ</b>
-
-<b>💬 sɪʟᴀʜᴋᴀɴ ʟᴀᴋᴜᴋᴀɴ ᴘᴇᴍʙᴀʏᴀʀᴀɴ ᴅᴇɴɢᴀɴ ʙᴇɴᴀʀ</b>
-""",
-            reply_markup=InlineKeyboardMarkup(buttons),
-        )
-        buttons_failed = [
+            "🛡️ ZALLUBOT",
             [
-                InlineKeyboardButton(
-                    "👤 ᴅᴀᴘᴀᴛᴋᴀɴ ᴘʀᴏꜰɪʟ 👤", callback_data=f"profil {get_user.id}"
-                )
+                ("STATUS", "❌ Pembayaran Anda tidak bisa dikonfirmasi"),
+                ("INFO", "Silakan lakukan pembayaran dengan benar"),
             ],
-        ]
-        return await callback_query.edit_message_text(
-            f"""
-<b>❌ {get_user.first_name} {get_user.last_name or ''} ᴛɪᴅᴀᴋ ᴅɪᴛᴀᴍʙᴀʜᴋᴀɴ ᴋᴇ ᴀɴɢɢᴏᴛᴀ ᴘʀᴇᴍɪᴜᴍ</b>
-""",
+            buttons=[
+                [btn("💳 ʟᴀᴋᴜᴋᴀɴ ᴘᴇᴍʙᴀʏᴀʀᴀɴ 💳", callback_data="bayar_dulu", style="success")],
+            ],
+        )
+        return await edit_rich_query(
+            callback_query,
+            "🛡️ ZALLUBOT",
+            [
+                ("STATUS", "❌ Tidak ditambahkan ke anggota premium"),
+                ("PENGGUNA", f"{get_user.first_name} {get_user.last_name or ''}".strip()),
+            ],
         )
     if query[0] == "home":
         if get_user.id in CONFIRM_PAYMENT:
             CONFIRM_PAYMENT.remove(get_user.id)
-            buttons_home = BTN.START(callback_query)
-            return await callback_query.edit_message_text(
-                MSG.START(callback_query),
-                reply_markup=InlineKeyboardMarkup(buttons_home),
-            )
-        else:
-            buttons_home = BTN.START(callback_query)
-            return await callback_query.edit_message_text(
-                MSG.START(callback_query),
-                reply_markup=InlineKeyboardMarkup(buttons_home),
-            )
+        title, rows, footer = home_table(
+            callback_query.from_user.first_name,
+            callback_query.from_user.last_name,
+            client.me.username,
+            len(ubot._ubot),
+        )
+        return await edit_rich_query(
+            callback_query,
+            title,
+            rows,
+            buttons=start_buttons(callback_query.from_user.id),
+            footer=footer,
+        )
