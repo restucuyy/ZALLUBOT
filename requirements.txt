@@ -1,4 +1,11 @@
-# ZALLUBOT - requirements
+# ZALLUBOT - requirements (VERSI FULL, SUDAH DIBENAHI)
+# Paket `removebg` dan `qrcode` DIBUANG dari daftar ini: tidak ada satu
+# file pun di bot ini yang mengimpor keduanya (sudah diaudit), tapi pip
+# tetap memasangnya - khusus `removebg`, pip ikut menarik onnxruntime +
+# scipy + scikit-image (ratusan MB) dan itulah yang membuat install di
+# panel gagal: [Errno 28] No space left on device. Menghapus dua baris
+# itu TIDAK mengubah fitur apa pun. opencv & numpy SENGAJA dipertahankan
+# karena memang dipakai modul blur/imagee/removebg/stickers.
 # Database sekarang LOKAL (SQLite bawaan Python) - motor/pymongo/dnspython
 # untuk MongoDB sudah dibuang, tidak dibutuhkan lagi.
 python-dotenv
@@ -31,6 +38,8 @@ yt-dlp
 wget
 python-dateutil
 emoji
+numpy==1.26.4
+opencv-python-headless==4.10.0.82
 pyromod==1.5
 pykeyboard
 httpx[http2]==0.27.2
@@ -40,7 +49,3 @@ pytimeparse
 speedtest-cli
 # --- Pyrogram fork (wajib untuk userbot ini) ---
 git+https://github.com/hakutakaid/pyrogram
-# --- V3 LITE: paket berat dibuang supaya muat di panel disk kecil ---
-# opencv-python-headless + numpy (ratusan MB, cuma dipakai modul blur/imagee/
-# removebg/stickers), paket `removebg` (tidak diimpor kode sama sekali tapi
-# menarik onnxruntime+scipy+scikit-image), dan `qrcode` (tidak diimpor lagi).

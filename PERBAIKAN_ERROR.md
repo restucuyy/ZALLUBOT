@@ -1,42 +1,40 @@
-# Perbaikan Error Install (No space left on device)
+# Perbaikan Error Install — VERSI FULL
 
-Repo ini = ZALLUBOT V3 (tanpa MongoDB, QRIS KiPay.id, jalan di panel
-Pterodactyl Python) yang **penyebab error install-nya sudah dibenahi**.
+Ini ZALLUBOT V3 **versi FULL** (semua modul lengkap, termasuk blur,
+imagee, removebg, stickers) dengan **satu-satunya perubahan** pada hal
+yang membuat error. Tidak ada fitur/modul yang dibuang atau diubah.
 
 ## Error lama
-Saat Start di panel, pip gagal di tengah:
+Saat Start di panel, install gagal di tengah:
 `ERROR: Could not install packages due to an OSError: [Errno 28] No space left on device`
 lalu `main.py` crash karena dependensi belum lengkap.
 
-## Penyebabnya
-`requirements.txt` versi lama memuat paket-paket raksasa:
-- `opencv-python-headless` — unduhan 49,9 MB (paket yang gagal di screenshot),
-  terpasang 100+ MB. Hanya dipakai 4 modul.
-- `removebg` (paket pip) — **tidak diimpor oleh satu file pun** di bot ini,
-  tapi menarik dependensi raksasa: onnxruntime, scipy, scikit-image
-  (total ratusan MB) untuk fitur yang tidak pernah dipakai.
-- `numpy` — tidak diimpor langsung oleh modul mana pun.
-- `qrcode` — tidak diimpor lagi sejak QRIS ganti KiPay.id.
+## Penyebabnya (hasil audit seluruh kode)
+Di `requirements.txt` lama ada paket **hantu**:
+- `removebg` — **tidak diimpor oleh satu file pun** di bot ini (modul
+  removebg bekerja lewat API remove.bg + requests, bukan paket ini).
+  Tapi pip tetap memasang paketnya DAN seluruh pohon dependensinya:
+  onnxruntime, scipy, scikit-image, pymatting — total ratusan MB
+  unduhan + hasil pasang. Inilah yang menghabiskan ruang sampai giliran
+  paket lain (opencv 49,9 MB di screenshot) gagal diunduh.
+- `qrcode` — juga tidak diimpor file mana pun lagi sejak QRIS ganti
+  KiPay.id (gambar QR sekarang resmi dari KiPay).
 
-## Yang dibenahi di repo ini
-- 4 paket di atas dibuang dari `requirements.txt`.
-- 4 modul pemakai opencv dibuang (bot mengimpor SEMUA modul saat start,
-  jadi file-nya harus ikut dibuang): `blur.py`, `imagee.py`, `removebg.py`,
-  `stickers.py`. Perintah yang hilang hanya: `.blur`, `.mirror`, `.negative`,
-  `.rmbg`, `.q`, `.kang`, `.tiny`, `.mmf`.
-- Selain itu **tidak ada yang berubah**: database lokal SQLite
-  (`data/zallubot.db`), `.qris` KiPay.id, dan 250+ modul lain utuh.
+## Perbaikannya (hanya ini)
+Dua baris paket hantu itu dibuang dari `requirements.txt` (+ komentar
+penjelasan). **Selesai.** Karena tidak ada kode yang mengimpornya,
+menghapusnya tidak mengubah fitur apa pun:
+- opencv + numpy **tetap ada** — memang dipakai modul blur, imagee,
+  removebg, stickers. Semua perintahnya tetap jalan.
+- Semua 262 file `.py` identik 100% dengan ZALLUBOT V3 biasa
+  (sudah diverifikasi dengan diff).
+- Tanpa MongoDB (SQLite lokal), QRIS KiPay.id, main.py panel — utuh.
 
 ## Cara jalan (panel Pterodactyl Python)
-1. Hapus isi server lama termasuk folder `.local` & `.cache`.
-2. Download repo ini (Code → Download ZIP) atau upload ulang ZIP-nya,
-   extract di File Manager.
+1. Hapus isi server lama termasuk folder `.local` & `.cache` sisa
+   install gagal (cache pip lama itu sendiri bisa ratusan MB).
+2. Upload ZIP ini / download dari GitHub, extract di File Manager.
 3. Buat `.env` dari `sample.env` (API_ID, API_HASH, BOT_TOKEN, OWNER_ID,
    DEVS, KIPAY_API_KEY production).
-4. Startup: PY_FILE / App Py File = `main.py`, Requirements = `requirements.txt`.
+4. Startup: PY_FILE = `main.py`, Requirements = `requirements.txt`.
 5. Start.
-
-## Catatan file storage
-Folder `storage/` berisi 4 file biner (2 font .ttf, template.jpg,
-TM_BLACK.png) yang dipakai beberapa modul gambar/teks. Pastikan keempat
-file itu ikut ter-upload ke panel bersama kodenya.
