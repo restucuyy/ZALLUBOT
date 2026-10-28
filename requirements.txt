@@ -1,0 +1,46 @@
+# ZALLUBOT - requirements
+# Database sekarang LOKAL (SQLite bawaan Python) - motor/pymongo/dnspython
+# untuk MongoDB sudah dibuang, tidak dibutuhkan lagi.
+python-dotenv
+telegraph==2.2.0
+TgCrypto==1.2.5
+tornado==6.4.1
+py-tgcalls==2.0.6
+ntgcalls==1.2.1
+rich==13.7.1
+pytz==2024.1
+psutil
+GitPython
+bs4
+Pillow==9.5.0
+pymediainfo
+requests
+unidecode
+filetype
+attrify
+uvloop
+pySmartDL
+html2text
+aiofiles==24.1.0
+aiohttp==3.9.5
+aiosignal==1.3.1
+gpytranslate
+gtts
+youtube-search-python
+yt-dlp
+wget
+python-dateutil
+emoji
+pyromod==1.5
+pykeyboard
+httpx[http2]==0.27.2
+# --- dependensi yang dipakai modul tapi sebelumnya tidak ada di requirements ---
+geopy
+pytimeparse
+speedtest-cli
+# --- Pyrogram fork (wajib untuk userbot ini) ---
+git+https://github.com/hakutakaid/pyrogram
+# --- V3 LITE: paket berat dibuang supaya muat di panel disk kecil ---
+# opencv-python-headless + numpy (ratusan MB, cuma dipakai modul blur/imagee/
+# removebg/stickers), paket `removebg` (tidak diimpor kode sama sekali tapi
+# menarik onnxruntime+scipy+scikit-image), dan `qrcode` (tidak diimpor lagi).
